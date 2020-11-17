@@ -8,7 +8,7 @@ function authentication(request, response, next) {
     next()
 
   } else {
-    response.send("Error: Not Authenticated")
+    response.status(401).json({"error": "Not Authenticated"})
   }
 }
 

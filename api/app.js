@@ -3,22 +3,12 @@ const authMiddleware = require("./middlewares/auth");
 const bodyParser = require('body-parser');
 const swaggerUI = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
+const dbConnect = require("./database");
+const routesCustomer =require('./routes/customer');
+const graphQL = require('../api/graphQL');
 
-const app = express();
 
-app.use(authMiddleware);
-
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// parse requests of content-type - application/json
-app.use(bodyParser.json());
-
-// Database connection
-require("./database")();
-
-require('./routes/customer')(app);
-
+// TODO: Move to an external file and than import
 const swaggerOptions = {
   swaggerDefinition: {
     info : {
@@ -33,7 +23,34 @@ const swaggerOptions = {
   apis: ['api/routes/*.js']
 }
 
-const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use('/', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
+async function createApp(config){ 
 
-module.exports = app
+  await dbConnect(config);
+
+  const app = express();
+
+  app.use(authMiddleware);
+
+  // parse application/x-www-form-urlencoded
+  app.use(bodyParser.urlencoded({ extended: true }));
+
+  // parse requests of content-type - application/json
+  app.use(bodyParser.json());
+
+  // adding routes
+  routesCustomer(app);
+
+  // adding graphql endpoint
+  graphQL(app)
+
+  // adding swagger
+  app.use('/', swaggerUI.serve, swaggerUI.setup( swaggerJsDoc(swaggerOptions)));
+
+  return app
+}
+
+
+
+
+
+module.exports = createApp

@@ -1,11 +1,4 @@
 const mongoose = require('mongoose')
-require('dotenv').config()
-
-const dbName = process.env.DB_NAME;
-const dbUser = process.env.DB_USER;
-const dbPassword = process.env.DB_PASSWORD;
-
-const url = `mongodb+srv://${dbUser}:${dbPassword}@basic-node-api-1.1pfx7.mongodb.net/${dbName}?retryWrites=true&w=majority`;
 
 const connectionParams = {
   useNewUrlParser: true,
@@ -14,15 +7,22 @@ const connectionParams = {
   useFindAndModify: false
 }
 
-function connect() {
-  mongoose.connect(url, connectionParams)
-    .then(() => {
-      console.log('Connected to database ');
-    })
-    .catch((err) => {
+async function connect(config) {
+
+  const {dbName, dbUser, dbPassword} = config.db;
+
+  // TODO: for integration test make the DB_URL also a variable
+  const url = `mongodb+srv://${dbUser}:${dbPassword}@basic-node-api-1.1pfx7.mongodb.net/${dbName}?retryWrites=true&w=majority`;
+
+  try {
+    console.log(url)
+    await mongoose.connect(url, connectionParams);
+    console.log('Connected to database ');
+  } catch (err) { 
       console.error(`Error connecting to the database. \n${err}`);
-      process.exit();
-    })
+      // process.exit();
+  }
 }
+
 
 module.exports = connect;

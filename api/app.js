@@ -6,22 +6,8 @@ const swaggerJsDoc = require('swagger-jsdoc');
 const dbConnect = require("./database");
 const routesCustomer =require('./routes/customer');
 const graphQL = require('../api/graphQL');
+const swaggerOptions = require('./config/swagger');
 
-
-// TODO: Move to an external file and than import
-const swaggerOptions = {
-  swaggerDefinition: {
-    info : {
-      title: 'Basic Node API',
-      description: 'Basic Node API',
-      contact: {
-        name: 'developer'
-      },
-      servers: ['http://localhost:3000']
-    }
-  },
-  apis: ['api/routes/*.js']
-}
 
 async function createApp(config){ 
 
@@ -48,9 +34,5 @@ async function createApp(config){
 
   return app
 }
-
-
-
-
 
 module.exports = createApp

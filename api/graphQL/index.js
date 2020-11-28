@@ -7,7 +7,7 @@ const Customer = require('../models/customer');
 // Construct a schema, using GraphQL schema language
 // TODO: move this to the schema file
 const typeDefs = gql`
-  type Customer{
+  type Customer {
       name: String
       surname: String
   }

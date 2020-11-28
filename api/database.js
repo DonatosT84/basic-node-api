@@ -9,18 +9,14 @@ const connectionParams = {
 
 async function connect(config) {
 
-  const {dbName, dbUser, dbPassword} = config.db;
-
-  // TODO: for integration test make the DB_URL also a variable
-  const url = `mongodb+srv://${dbUser}:${dbPassword}@basic-node-api-1.1pfx7.mongodb.net/${dbName}?retryWrites=true&w=majority`;
+  const { dbUrl } = config.db;
 
   try {
-    console.log(url)
-    await mongoose.connect(url, connectionParams);
+    await mongoose.connect(dbUrl, connectionParams);
     console.log('Connected to database ');
   } catch (err) { 
-      console.error(`Error connecting to the database. \n${err}`);
-      // process.exit();
+      // console.error(`Error connecting to the database. \n${err}`);
+      return new Error(err);
   }
 }
 

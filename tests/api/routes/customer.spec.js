@@ -1,46 +1,43 @@
-const request = require('supertest');
-const mongoose = require('mongoose');
-const MockMongoose = require('mock-mongoose').MockMongoose;
+const request = require("supertest");
+const mongoose = require("mongoose");
+const MockMongoose = require("mock-mongoose").MockMongoose;
 const mockMongoose = new MockMongoose(mongoose);
 
-const createApp = require('../../../api/app');
+const createApp = require("../../../api/app");
 
 let config;
 
-beforeAll(async () => {
+let app;
 
+beforeAll(async (done) => {
   config = {
     db: {
-      dbUrl: 'mongodb://test',
-      mongoose: mockMongoose
-    }
+      dbUrl: "mongodb://test",
+      mongoose: mockMongoose,
+    },
   };
 
-  await mockMongoose.prepareStorage()
-    .then(() => {
-      mongoose.connect('mongodb://test');
-      mongoose.connection.on('connected', () => {
-        console.log('db connection is now open');
-      });
-    })
-    .catch((err) => {
-      console.log('Mock Error : ', err );
-    });
+  await mockMongoose.prepareStorage();
 
+  await mongoose.connect("mongodb://test");
+
+  app = await createApp(config);
   // replace with test
   // TODO: Replace this with a mock instance,
   // 1. mock - mongoose : https://www.npmjs.com/package/mock-mongoose
   // 2. testcontainers: https://www.npmjs.com/package/testcontainers
+  done();
 });
 
-afterAll(() => {
-  mongoose.connection.close();
+afterAll(async (done) => {
+  await mongoose.connection.close();
+  done();
 });
 
 describe("Customer Routes", () => {
-    it('should get all customers', async (done) => {
+  it("should get all customers", function (done) {
     // const customersSpy = jest.spyOn(customers, 'findAll');
-      /*
+    /*
     customersSpy.mockReturnValue([
       {
         "_id": "5fb3eb2115183126a02941e3",
@@ -60,15 +57,20 @@ describe("Customer Routes", () => {
       },
     ]);
     */
-   
+
     // 1. Create Customer
     // 2. Check that it can get it
     // 3. Update / Delete The customer
-console.log(config);
-    const app = await createApp(config);
-    const response = await request(app).get('/customers');
-
-    expect(response.status).toEqual(200);
-    done();
+    request(app)
+      .post("/customers")
+      .set("Accept", "application/json")
+      .set("Content-Type", "application/json")
+      .send({ name: "donatos", surname: "tasis" })
+      .expect(201)
+      .end(function (err, res) {
+        if (err) return done(err);
+        console.log(res.body);
+        done();
+      });
   });
 });

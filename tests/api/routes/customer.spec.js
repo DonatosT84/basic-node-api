@@ -1,32 +1,43 @@
 const request = require('supertest');
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+const MockMongoose = require('mock-mongoose').MockMongoose;
+const mockMongoose = new MockMongoose(mongoose);
 
 const createApp = require('../../../api/app');
 
+let config;
 
-let config; 
-beforeAll(() => { 
+beforeAll(async () => {
+
+  config = {
+    db: {
+      dbUrl: 'mongodb://test',
+      mongoose: mockMongoose
+    }
+  };
+
+  await mockMongoose.prepareStorage()
+    .then(() => {
+      mongoose.connect('mongodb://test');
+      mongoose.connection.on('connected', () => {
+        console.log('db connection is now open');
+      });
+    })
+    .catch((err) => {
+      console.log('Mock Error : ', err );
+    });
 
   // replace with test
   // TODO: Replace this with a mock instance,
   // 1. mock - mongoose : https://www.npmjs.com/package/mock-mongoose
   // 2. testcontainers: https://www.npmjs.com/package/testcontainers
-  require('dotenv').config();
-     config = {
-      db: {
-        dbName: process.env.DB_NAME,
-        dbUser: process.env.DB_USER,
-        dbPassword: process.env.DB_PASSWORD
-      }
-    }
+});
 
-})
+afterAll(() => {
+  mongoose.connection.close();
+});
 
-afterAll(() => { 
-  mongoose.connection.close()
-})
-
-describe("Customer Routes", () => { 
+describe("Customer Routes", () => {
     it('should get all customers', async (done) => {
     // const customersSpy = jest.spyOn(customers, 'findAll');
       /*
@@ -53,11 +64,11 @@ describe("Customer Routes", () => {
     // 1. Create Customer
     // 2. Check that it can get it
     // 3. Update / Delete The customer
-      
+console.log(config);
     const app = await createApp(config);
     const response = await request(app).get('/customers');
 
     expect(response.status).toEqual(200);
     done();
   });
-})
+});

@@ -1,5 +1,3 @@
-const mongoose = require('mongoose')
-
 const connectionParams = {
   useNewUrlParser: true,
   useCreateIndex: true,
@@ -9,7 +7,7 @@ const connectionParams = {
 
 async function connect(config) {
 
-  const { dbUrl } = config.db;
+  const { dbUrl, mongoose } = config.db;
 
   try {
     await mongoose.connect(dbUrl, connectionParams);

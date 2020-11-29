@@ -1,9 +1,12 @@
+const mongoose = require('mongoose');
+
 require('dotenv').config();
 
 // config
 const config = {
   db: {
-    dbUrl: process.env.DB_URL
+    dbUrl: process.env.DB_URL,
+    mongoose: mongoose
   }
 }
 

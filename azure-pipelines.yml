@@ -2,7 +2,6 @@
 # Build a Node.js Express app and deploy it to Azure as a Linux web app.
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
-
 trigger:
 - main
 
@@ -12,7 +11,7 @@ variables:
   azureSubscription: '583cda5f-c229-4448-9a4f-51d56aeb2968'
   
   # Web app name
-  webAppName: Customers API
+  webAppName: customers-api
   
   # Environment name
   environmentName: dev
@@ -35,10 +34,11 @@ stages:
         versionSpec: '10.x'
       displayName: 'Install Node.js'
 
+# ToDo: npm run test --if-present
+
     - script: |
         npm install
         npm run build --if-present
-        npm run test --if-present
       displayName: 'npm install, build and test'
       
     - task: ArchiveFiles@2

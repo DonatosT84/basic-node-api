@@ -1,7 +1,6 @@
 const request = require("supertest");
 const mongoose = require("mongoose");
-const MockMongoose = require("mock-mongoose").MockMongoose;
-const mockMongoose = new MockMongoose(mongoose);
+
 
 const createApp = require("../../../api/app");
 
@@ -10,22 +9,19 @@ let config;
 let app;
 
 beforeAll(async (done) => {
+  let mongose = jest.fn();
+
   config = {
     db: {
       dbUrl: "mongodb://test",
-      mongoose: mockMongoose,
+      mongoose: mongose,
     },
   };
 
-  await mockMongoose.prepareStorage();
 
   await mongoose.connect("mongodb://test");
 
   app = await createApp(config);
-  // replace with test
-  // TODO: Replace this with a mock instance,
-  // 1. mock - mongoose : https://www.npmjs.com/package/mock-mongoose
-  // 2. testcontainers: https://www.npmjs.com/package/testcontainers
   done();
 });
 
@@ -35,7 +31,7 @@ afterAll(async (done) => {
 });
 
 describe("Customer Routes", () => {
-  it("should get all customers", function (done) {
+  it("should get all customers", async (done) => {
     // const customersSpy = jest.spyOn(customers, 'findAll');
     /*
     customersSpy.mockReturnValue([
@@ -61,7 +57,7 @@ describe("Customer Routes", () => {
     // 1. Create Customer
     // 2. Check that it can get it
     // 3. Update / Delete The customer
-    request(app)
+    await request(app)
       .post("/customers")
       .set("Accept", "application/json")
       .set("Content-Type", "application/json")
@@ -72,5 +68,5 @@ describe("Customer Routes", () => {
         console.log(res.body);
         done();
       });
-  });
+  }, 30000);
 });

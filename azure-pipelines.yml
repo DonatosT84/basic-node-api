@@ -11,7 +11,7 @@ variables:
   azureSubscription: '583cda5f-c229-4448-9a4f-51d56aeb2968'
   
   # Web app name
-  webAppName: Customer API
+  webAppName: customers-api
   
   # Environment name
   environmentName: dev
